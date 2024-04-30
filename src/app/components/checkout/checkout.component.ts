@@ -31,6 +31,8 @@ export class CheckoutComponent implements OnInit {
   billingAddressStates: State[] = [];
   TLuv2ShopValidators: any;
 
+  storage: Storage = sessionStorage;
+
 
   constructor(
     private formBuilder: FormBuilder,
@@ -45,12 +47,15 @@ export class CheckoutComponent implements OnInit {
 
     this.reviewCartDetails();
 
+    //read the user's email address from browser storage
+    const theEmail = JSON.parse(this.storage.getItem('userEmail')!);
+
     this.checkoutFormGroup = this.formBuilder.group({
       customer: this.formBuilder.group({
         firstName: new FormControl('', [Validators.required, Validators.minLength(2), TLuv2ShopValidators.notOnlyWhitespace]),
         lastName: new FormControl('', [Validators.required, Validators.minLength(2), TLuv2ShopValidators.notOnlyWhitespace]),
-        email: new FormControl('',
-          [Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]
+        email: new FormControl(theEmail,
+          [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$')]
         ),
       }),
       shippingAddress: this.formBuilder.group({
@@ -227,7 +232,7 @@ export class CheckoutComponent implements OnInit {
 
   }
 
-  
+
   resetCart() {
     //reset  cart data
     this.cartService.cartItems = [];
